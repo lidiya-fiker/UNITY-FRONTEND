@@ -35,7 +35,9 @@ import Psychiatrist from "./pages/careers/Psychiatrist";
 import LicensedTherapist from "./pages/careers/LicensedTherapist";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfUse from "./pages/TermsOsUse";
-
+import ReschedulePage from "./pages/client/reschedule";
+import SelectTimeSlot from "./pages/client/reschedule";
+import BookingSuccess from "./pages/BookingSuccess";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -84,9 +86,10 @@ const App = () => (
             <Route path="/adminPanel" element={<AdminPanel />} />
             <Route path="/Counselor/:userId" element={<CounselorDetail />} />
             <Route path="/payment/success" element={<PaymentSuccess />} />
-            PaymentSuccess
             <Route path="/careers/therapist" element={<LicensedTherapist />} />
             <Route path="/careers/psychiatrist" element={<Psychiatrist />} />
+            <Route path="/reschedule" element={<SelectTimeSlot />} />
+            <Route path="/booking-success" element={<BookingSuccess />} />
             <Route
               path="/careers/social-worker"
               element={<ClinicalSocialWorker />}

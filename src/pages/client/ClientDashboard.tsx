@@ -29,21 +29,7 @@ export default function ClientDashboard() {
 
   const [sessions, setSessions] = useState([]);
   const upcomingScrollRef = useRef(null);
-
-  useEffect(() => {
-    const fetchSessions = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:3000/api/clientbooking/f35a4d7c-979f-493d-b032-aa91a1b984eb",
-        );
-        setSessions(response.data);
-      } catch (error) {
-        console.error("Error fetching sessions:", error);
-      }
-    };
-
-    fetchSessions();
-  }, []);
+  // f35a4d7c-979f-493d-b032-aa91a1b984eb
 
   // --- Fetch Client Profile ---
   useEffect(() => {
@@ -60,8 +46,10 @@ export default function ClientDashboard() {
           `http://localhost:3000/clients/profile/${decoded.id}`,
           { headers: { Authorization: `Bearer ${token}` } },
         );
+        const userId = decoded.id;
+        console.log(userId);
         setProfile(res.data);
-        setClientId(res.data.user.id);
+        setClientId(userId);
       } catch (err) {
         console.error("Failed to fetch profile", err);
       }
@@ -69,6 +57,21 @@ export default function ClientDashboard() {
 
     fetchProfile();
   }, []);
+
+  useEffect(() => {
+    const fetchSessions = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3000/api/clientbooking/${clientId}`,
+        );
+        setSessions(response.data);
+      } catch (error) {
+        console.error("Error fetching sessions:", error);
+      }
+    };
+
+    if (clientId) fetchSessions();
+  }, [clientId]); // <-- Add clientId here
 
   // --- Fetch Counselors ---
   useEffect(() => {
@@ -217,15 +220,17 @@ export default function ClientDashboard() {
                   }}>
                   join session
                 </div>
-                <div className="text-gray-600">Date: {session.date}</div>
-                <div className="text-gray-600">Time: {session.startTime}</div>
-                {/* <div className="text-gray-600">
-                  Counselor: {session.counselor}
-                </div> */}
-
+                <div className="text-gray-600">
+                  Date: {session.schedule.date}
+                </div>
+                <div className="text-gray-600">
+                  Time: {session.schedule.startTime}
+                </div>
                 <button
                   className="mt-2 px-3 py-1 bg-purple-400 text-white rounded shadow hover:bg-purple-700 transition duration-200"
-                 >
+                  onClick={() =>
+                    navigate("/reschedule", { state: { sessions } })
+                  }>
                   Reschedule
                 </button>
               </div>

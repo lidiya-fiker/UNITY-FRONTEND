@@ -134,14 +134,7 @@ const BookSession = () => {
     fetchClientData();
   }, []);
 
-  // useEffect(() => {
-  //   if (selectedTherapist) {
-  //     setFname(selectedTherapist.firstName || "");
-  //     setLname(selectedTherapist.lastName || "");
-  //     setEmail(selectedTherapist.email || "");
-  //     setClientId(selectedTherapist.id || "");
-  //   }
-  // }, [selectedTherapist]);
+
 
   useEffect(() => {
     const fetchSchedule = async () => {

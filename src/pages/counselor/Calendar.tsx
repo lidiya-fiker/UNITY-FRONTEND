@@ -14,6 +14,7 @@ import {
   addHours,
   parse,
 } from "date-fns";
+import { useSearchParams } from "react-router-dom";
 
 function parseJwt(token: string) {
   try {
@@ -51,6 +52,8 @@ export default function Calendar() {
     end: endOfMonth(currentMonth),
   });
 
+
+
   // Fetch profile with status and approval
   useEffect(() => {
     const fetchProfile = async () => {
@@ -70,9 +73,12 @@ export default function Calendar() {
       }
 
       try {
-        const res = await axios.get(`http://localhost:3000/counselors/profile/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await axios.get(
+          `http://localhost:3000/counselors/profile/${id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
 
         // Expecting res.data.status (string) and res.data.isApproved (boolean)
         setStatus(res.data.status);
@@ -101,9 +107,12 @@ export default function Calendar() {
       const endDate = format(endOfMonth(currentMonth), "yyyy-MM-dd");
 
       try {
-        const res = await axios.get(`http://localhost:3000/schedule/available`, {
-          params: { startDate, endDate, counselorId },
-        });
+        const res = await axios.get(
+          `http://localhost:3000/schedule/available`,
+          {
+            params: { startDate, endDate, counselorId },
+          },
+        );
 
         const scheduleMap: Record<string, TimeSlot[]> = {};
         res.data.forEach((slot: any) => {
@@ -241,7 +250,9 @@ export default function Calendar() {
       <div className="flex gap-8 p-8">
         <div className="w-96 rounded-lg bg-white shadow">
           <div className="flex items-center justify-between border-b px-6 py-2">
-            <span className="text-lg font-semibold">{format(currentMonth, "MMMM yyyy")}</span>
+            <span className="text-lg font-semibold">
+              {format(currentMonth, "MMMM yyyy")}
+            </span>
             <div className="flex gap-2">
               <button
                 onClick={() =>
@@ -249,8 +260,7 @@ export default function Calendar() {
                     (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1),
                   )
                 }
-                className="p-1 hover:bg-gray-100 rounded"
-              >
+                className="p-1 hover:bg-gray-100 rounded">
                 ←
               </button>
               <button
@@ -259,8 +269,7 @@ export default function Calendar() {
                     (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1),
                   )
                 }
-                className="p-1 hover:bg-gray-100 rounded"
-              >
+                className="p-1 hover:bg-gray-100 rounded">
                 →
               </button>
             </div>
@@ -297,8 +306,7 @@ export default function Calendar() {
                        ? "cursor-not-allowed bg-gray-100 text-gray-400"
                        : "hover:bg-gray-50"
                    }
-                 `}
-                >
+                 `}>
                   {format(day, "d")}
                   {hasSlots && !isPastDate && (
                     <div className="absolute bottom-1 left-1/2 -translate-x-1/2">
@@ -319,7 +327,8 @@ export default function Calendar() {
 
             {!canModifyAvailability && (
               <p className="text-red-600 mb-6 text-center">
-                Your account is not active or approved. You cannot post articles or set availabilities.
+                Your account is not active or approved. You cannot post articles
+                or set availabilities.
               </p>
             )}
 
@@ -355,8 +364,7 @@ export default function Calendar() {
                       canModifyAvailability
                         ? "bg-blue-600 text-white hover:bg-blue-700"
                         : "bg-gray-400 cursor-not-allowed"
-                    }`}
-                  >
+                    }`}>
                     Add Slot
                   </button>
                 </div>
@@ -368,16 +376,14 @@ export default function Calendar() {
                   {getDateSchedule(selectedDate).map((slot, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between bg-blue-50 rounded-md px-4 py-2"
-                    >
+                      className="flex items-center justify-between bg-blue-50 rounded-md px-4 py-2">
                       <span>
                         {slot.start} - {slot.end}
                       </span>
                       {canModifyAvailability && (
                         <button
                           onClick={() => handleRemoveSlot(selectedDate, slot)}
-                          className="text-red-600 hover:text-red-700"
-                        >
+                          className="text-red-600 hover:text-red-700">
                           ×
                         </button>
                       )}
