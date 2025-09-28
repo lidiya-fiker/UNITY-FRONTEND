@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: unity-frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://unityconsultancy-backend.onrender.com
