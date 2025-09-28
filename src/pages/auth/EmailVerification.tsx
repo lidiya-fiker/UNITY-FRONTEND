@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { API_URL } from "@/config/api";
 
 const EmailVerification = () => {
   const navigate = useNavigate();
@@ -87,7 +88,8 @@ const handleVerify = async () => {
   setSuccessMessage(null);
 
   try {
-    const res = await fetch("http://localhost:3000/user/verifyAccount", {
+    const res = await fetch(`${API_URL
+      }/user/verifyAccount`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ verificationId, otp: code, isOtp: true }),
@@ -139,7 +141,7 @@ const handleVerify = async () => {
     setSuccessMessage(null);
 
     try {
-      const res = await fetch("http://localhost:3000/user/resend-otp", {
+      const res = await fetch(`${API_URL}/user/resend-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ verificationId }),

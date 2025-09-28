@@ -19,6 +19,7 @@ import {
 } from "date-fns";
 
 import { jwtDecode } from "jwt-decode";
+import { API_URL } from "@/config/api";
 
 interface TimeSlot {
   id?: string;
@@ -44,6 +45,13 @@ interface DecodedToken {
   iat: number;
   exp: number;
 }
+
+interface ApiSlot {
+  id: string;
+  date: string; // ISO string
+  startTime: string; // e.g., "09:00"
+  endTime: string; // e.g., "10:00"
+}
 interface Client {
   userId: string;
   user: {
@@ -52,11 +60,11 @@ interface Client {
     lastName: string;
     email: string;
   };
-  bookings: any[];
-  payments: any[];
+  bookings: unknown[];
+  payments: unknown[];
 }
 
-const API_URL = "http://localhost:3000";
+
 
 const BookSession = () => {
   const navigate = useNavigate();
@@ -98,7 +106,7 @@ const BookSession = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/counselors")
+      .get(`${API_URL}/counselors`)
       .then((res) => {
         setTherapists(res.data);
       })
@@ -134,8 +142,6 @@ const BookSession = () => {
     fetchClientData();
   }, []);
 
-
-
   useEffect(() => {
     const fetchSchedule = async () => {
       if (!selectedTherapist?.id) return;
@@ -152,7 +158,7 @@ const BookSession = () => {
         });
 
         const scheduleMap: Record<string, TimeSlot[]> = {};
-        res.data.forEach((slot: any) => {
+        res.data.forEach((slot: ApiSlot) => {
           const dateStr = slot.date.split("T")[0];
           if (!scheduleMap[dateStr]) scheduleMap[dateStr] = [];
           scheduleMap[dateStr].push({
@@ -258,7 +264,7 @@ const BookSession = () => {
     };
 
     try {
-      const res = await fetch("http://localhost:3000/payment/initialize", {
+      const res = await fetch(`${API_URL}/payment/initialize`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -391,7 +397,7 @@ const BookSession = () => {
                           id: therapist.id,
                           fullName: `${therapist.firstName} ${therapist.lastName}`,
                           image: therapist.image
-                            ? `http://localhost:3000/uploads/profile-pictures/${therapist.image}`
+                            ? `${API_URL}/uploads/profile-pictures/${therapist.image}`
                             : null,
                           firstLetter:
                             therapist.firstName?.[0]?.toUpperCase() ||
@@ -407,7 +413,7 @@ const BookSession = () => {
                       <div className="flex justify-center mb-4">
                         {therapist.image ? (
                           <img
-                            src={`http://localhost:3000/uploads/profile-pictures/${therapist.image}`}
+                            src={`${API_URL}/uploads/profile-pictures/${therapist.image}`}
                             alt={`${therapist.firstName} ${therapist.lastName}`}
                             className="w-24 h-24 rounded-full mx-auto object-cover"
                           />

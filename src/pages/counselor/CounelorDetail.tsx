@@ -1,9 +1,8 @@
-
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Navbar from "./component/Navbar";
 import axios from "axios";
-
+import { API_URL } from "@/config/api";
 
 const CounselorProfile = () => {
   const location = useLocation();
@@ -17,7 +16,7 @@ const CounselorProfile = () => {
   useEffect(() => {
     if (therapist?.id) {
       axios
-        .get(`http://localhost:3000/counselors/profile/${therapist.id}`)
+        .get(`${API_URL}/counselors/profile/${therapist.id}`)
         .then((res) => {
           setProfileData({
             bio: res.data.bio || "",
@@ -56,7 +55,7 @@ const CounselorProfile = () => {
             <div className="md:col-span-3 relative">
               {therapist.profilePicture ? (
                 <img
-                  src={`http://localhost:3000/uploads/profile-pictures/${therapist.profilePicture}`}
+                  src={`${API_URL}/uploads/profile-pictures/${therapist.profilePicture}`}
                   alt="Counselor"
                   className="w-full h-auto rounded-lg shadow-sm object-cover aspect-[3/4]"
                 />

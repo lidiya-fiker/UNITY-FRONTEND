@@ -15,6 +15,7 @@ import {
 } from "date-fns";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import { API_URL } from "@/config/api";
 
 interface TimeSlot {
   id: string;
@@ -45,7 +46,7 @@ interface Session {
   counselor: Counselor;
 }
 
-const API_URL = "http://localhost:3000";
+
 
 const SelectTimeSlot: React.FC = () => {
   const location = useLocation();
@@ -148,10 +149,16 @@ const SelectTimeSlot: React.FC = () => {
       setTimeout(() => {
         navigate("/booking-success");
       }, 100);
-    } catch (err: any) {
-      setError(
-        err?.response?.data?.message || "Failed to rebook. Please try again.",
-      );
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err) && err.response) {
+        setError(
+          err.response.data?.message || "Failed to rebook. Please try again.",
+        );
+      } else if (err instanceof Error) {
+        setError(err.message || "Failed to rebook. Please try again.");
+      } else {
+        setError("Failed to rebook. Please try again.");
+      }
     } finally {
       setLoading(false);
     }

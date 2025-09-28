@@ -1,3 +1,4 @@
+import { API_URL } from "@/config/api";
 import React, { useState } from "react";
 import ReactStars from "react-rating-stars-component";
 
@@ -13,7 +14,7 @@ export default function RateCounselor({ counselorId }) {
     setLoading(true);
 
     // Replace with your backend API endpoint
-    const apiUrl = "http://localhost:3000/ratings";
+    const apiUrl = `${API_URL}/ratings`;
     try {
       const res = await fetch(apiUrl, {
         method: "POST",

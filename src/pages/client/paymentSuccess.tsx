@@ -12,7 +12,7 @@ const PaymentSuccess = () => {
       return;
     }
 
-    fetch(`http://localhost:3000/payment/verify/${txRef}`)
+    fetch(`${API_URL}/payment/verify/${txRef}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.status === "success") {

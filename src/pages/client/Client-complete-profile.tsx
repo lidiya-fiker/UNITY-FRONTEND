@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import axios from "axios";
+import { API_URL } from "@/config/api";
 
-type MyJwtPayload = { id: string; email: string; [key: string]: any };
+type MyJwtPayload = { id: string; email: string; [key: string]: unknown };
 
 const ProfileForm = () => {
   const navigate = useNavigate();
@@ -34,27 +35,24 @@ const ProfileForm = () => {
         const id = decoded.id;
         setUserId(id);
 
-        const res = await axios.get(
-          `http://localhost:3000/clients/profile/${id}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const res = await axios.get(`${API_URL}/clients/profile/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
         const data = res.data;
 
-       setForm((prev) => ({
-  ...prev,
-  phone: data.phoneNumber || "",
-  addres: data.addres || data.addres || "",
-  gender:
-  data.gender && typeof data.gender === "string"
-    ? data.gender.charAt(0).toUpperCase() + data.gender.slice(1).toLowerCase()
-    : "",
-  maritalStatus: data.maritalStatus || "", // do not fallback to unrelated field
-  existingProfilePicture: data.profilePicture || "",
-}));
-
+        setForm((prev) => ({
+          ...prev,
+          phone: data.phoneNumber || "",
+          addres: data.addres || data.addres || "",
+          gender:
+            data.gender && typeof data.gender === "string"
+              ? data.gender.charAt(0).toUpperCase() +
+                data.gender.slice(1).toLowerCase()
+              : "",
+          maritalStatus: data.maritalStatus || "", // do not fallback to unrelated field
+          existingProfilePicture: data.profilePicture || "",
+        }));
       } catch (err) {
         console.error("Failed to fetch profile", err);
       } finally {
@@ -66,9 +64,11 @@ const ProfileForm = () => {
 
   // Handle input changes
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
-    const { name, value, files } = e.target as any;
+    const { name, value, files } = e.target as unknown;
 
     if (name === "profilePicture" && files?.[0]) {
       setForm((prev) => ({ ...prev, profilePicture: files[0] }));
@@ -102,7 +102,7 @@ const ProfileForm = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/clients/complete-profile", {
+      const res = await fetch(`${API_URL}/clients/complete-profile`, {
         method: "PATCH",
         body: formData,
       });
@@ -115,9 +115,9 @@ const ProfileForm = () => {
       const result = await res.json();
       console.log("Profile submitted:", result);
       navigate("/client-dashboard");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Submission error:", error);
-      alert(error.message);
+     
     }
   };
 
@@ -144,7 +144,7 @@ const ProfileForm = () => {
                 />
               ) : form.existingProfilePicture ? (
                 <img
-                  src={`http://localhost:3000/uploads/profile-pictures/${form.existingProfilePicture}`}
+                  src={`${API_URL}/uploads/profile-pictures/${form.existingProfilePicture}`}
                   alt="Profile"
                   className="w-full h-full object-cover"
                 />
@@ -152,8 +152,7 @@ const ProfileForm = () => {
                 <svg
                   className="w-full h-full text-gray-400"
                   fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                  viewBox="0 0 24 24">
                   <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                 </svg>
               )}
@@ -162,14 +161,12 @@ const ProfileForm = () => {
               type="button"
               onClick={triggerFileInput}
               className="absolute bottom-0 right-0 bg-purple-400 rounded-full p-2 border-4 border-white hover:bg-purple-500 transition-colors"
-              aria-label="Upload profile picture"
-            >
+              aria-label="Upload profile picture">
               <svg
                 className="w-5 h-5 text-white"
                 fill="none"
                 stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+                viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -219,8 +216,7 @@ const ProfileForm = () => {
               name="maritalStatus"
               value={form.maritalStatus}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-md bg-purple-100 border border-gray-300 focus:ring-2 focus:ring-purple-300 focus:outline-none"
-            >
+              className="w-full px-4 py-3 rounded-md bg-purple-100 border border-gray-300 focus:ring-2 focus:ring-purple-300 focus:outline-none">
               <option value="">Marital Status</option>
               <option>Single</option>
               <option>Married</option>
@@ -232,8 +228,7 @@ const ProfileForm = () => {
               name="gender"
               value={form.gender}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-md bg-purple-100 border border-gray-300 focus:ring-2 focus:ring-purple-300 focus:outline-none"
-            >
+              className="w-full px-4 py-3 rounded-md bg-purple-100 border border-gray-300 focus:ring-2 focus:ring-purple-300 focus:outline-none">
               <option value="">Gender</option>
               <option>Male</option>
               <option>Female</option>
@@ -244,15 +239,13 @@ const ProfileForm = () => {
           <div className="flex justify-center space-x-6 mt-8">
             <button
               type="submit"
-              className="bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3 px-12 rounded-lg shadow-md transition-all"
-            >
+              className="bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3 px-12 rounded-lg shadow-md transition-all">
               Submit Profile
             </button>
             <button
               type="button"
               onClick={() => navigate("/client-dashboard")}
-              className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-3 px-12 rounded-lg shadow-md transition-all"
-            >
+              className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-3 px-12 rounded-lg shadow-md transition-all">
               Later
             </button>
           </div>

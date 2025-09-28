@@ -1,16 +1,15 @@
 import axios from "axios";
-
-const API_URL = "http://localhost:3000"; // Replace with your NestJS backend URL
+import { ENDPOINTS } from "@/config/api";
 
 export const getAvailableSlots = async (date, counselorId) => {
-  const res = await axios.get(`${API_URL}/api/available-slots`, {
+  const res = await axios.get(ENDPOINTS.AVAILABLE_SLOTS, {
     params: { date, counselorId },
   });
   return res.data;
 };
 
 export const createBooking = async ({ clientId, scheduleId }) => {
-  const res = await axios.post(`${API_URL}/bookings`, {
+  const res = await axios.post(ENDPOINTS.BOOKINGS, {
     clientId,
     scheduleId,
   });

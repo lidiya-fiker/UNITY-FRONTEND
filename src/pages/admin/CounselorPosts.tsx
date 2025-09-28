@@ -1,18 +1,19 @@
+import { API_URL } from '@/config/api';
 import React, { useEffect, useState } from 'react';
 
 const CounselorPosts = () => {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:3000/articles', {
+    fetch(`${API_URL}/articles`, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     })
       .then((res) => res.json())
       .then((data) => setPosts(Array.isArray(data) ? data : []))
       .catch((err) => {
-        console.error('Error fetching posts:', err);
+        console.error("Error fetching posts:", err);
       });
   }, []);
 return (

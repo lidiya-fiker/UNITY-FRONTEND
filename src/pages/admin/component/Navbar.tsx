@@ -1,36 +1,35 @@
-import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';
-import  { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { API_URL } from "@/config/api";
+import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
-    interface MyJwtPayload {
-      id: string;
-      email: string;
-      [key: string]: any;
-    }
-    
-      const navigate = useNavigate();
-      const [showNotifications, setShowNotifications] = useState(false);
-    const [loading, setLoading] = useState(true);
-    
-    const [profile, setProfile] = useState(null);
-    useEffect(() => {
-      const fetchProfile = async () => {
-        const token = localStorage.getItem("token");       
-  
-        if (!token) return;
-    
-        try {
-         const decoded = jwtDecode<MyJwtPayload>(token);
-    const userId = decoded.id; // ✅ Now this works!
-       console.log(userId);
-          const res = await axios.get(`http://localhost:3000/clients/profile/${userId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-          
-        );
-console.log("Fetched profile:", res.data); // ⬅️ Add this
+  interface MyJwtPayload {
+    id: string;
+    email: string;
+    [key: string]: unknown;
+  }
+
+  const navigate = useNavigate();
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const [profile, setProfile] = useState(null);
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) return;
+
+      try {
+        const decoded = jwtDecode<MyJwtPayload>(token);
+        const userId = decoded.id; // ✅ Now this works!
+        console.log(userId);
+        const res = await axios.get(`${API_URL}/clients/profile/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log("Fetched profile:", res.data); // ⬅️ Add this
         setProfile(res.data);
       } catch (err) {
         console.error("Failed to fetch profile", err);
@@ -104,7 +103,6 @@ console.log("Fetched profile:", res.data); // ⬅️ Add this
     );
   }
 
-
   // User Icon component
   function UserIcon({ onClick }) {
     return (
@@ -121,7 +119,6 @@ console.log("Fetched profile:", res.data); // ⬅️ Add this
   // Notification Card with message field and recipient select
   function NotificationCard({ show }) {
     if (!show) return null;
-
 
     return (
       <div className="absolute right-8 top-16 w-96 bg-white rounded-xl shadow-lg p-5 z-50 border border-gray-200 flex flex-col">
@@ -173,7 +170,7 @@ console.log("Fetched profile:", res.data); // ⬅️ Add this
           title="counselor Posts">
           Counselor Posts
         </li>
-       
+
         <li
           className="cursor-pointer hover:text-purple-700 transition"
           onClick={() => alert("Logout clicked")}
@@ -183,16 +180,13 @@ console.log("Fetched profile:", res.data); // ⬅️ Add this
         <li>
           <NotificationBell onClick={() => setShowNotifications((s) => !s)} />
         </li>
-      <li
-  onClick={() => navigate("/client-complete-profile")}
-  className="cursor-pointer"
->
-  
-    <div className="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-semibold text-lg uppercase">
-       A
-    </div>
- 
-</li>
+        <li
+          onClick={() => navigate("/client-complete-profile")}
+          className="cursor-pointer">
+          <div className="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-semibold text-lg uppercase">
+            A
+          </div>
+        </li>
       </ul>
 
       <NotificationCard show={showNotifications} />

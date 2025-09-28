@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import axios from "axios";
+import { API_URL } from "@/config/api";
 
-type MyJwtPayload = { id: string; email: string; [key: string]: any };
+type MyJwtPayload = { id: string; email: string; [key: string]: unknown};
 
 const ProfileForm = () => {
   const navigate = useNavigate();
-
 
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -31,9 +31,9 @@ const ProfileForm = () => {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const certInputRef = useRef<HTMLInputElement>(null);
-  
-  // Decode token on mount to get userId 
-   useEffect(() => {
+
+  // Decode token on mount to get userId
+  useEffect(() => {
     const fetchProfile = async () => {
       const token = localStorage.getItem("token");
       if (!token) return;
@@ -42,7 +42,7 @@ const ProfileForm = () => {
         const id = decoded.id;
         setUserId(id);
 
-        const res = await axios.get(`http://localhost:3000/counselors/profile/${id}`, {
+        const res = await axios.get(`${API_URL}/counselors/profile/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -69,13 +69,14 @@ const ProfileForm = () => {
     };
     fetchProfile();
   }, []);
-    
 
   // Handle input changes
- const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
-    const { name, value, type, checked, files } = e.target as any;
+    const { name, value, type, checked, files } = e.target as unknown;
 
     if (name === "profilePicture" && files?.[0]) {
       setForm((prev) => ({ ...prev, profilePicture: files[0] }));
@@ -93,11 +94,9 @@ const ProfileForm = () => {
     }
   };
 
-
   const triggerFileInput = (ref: React.RefObject<HTMLInputElement>) => {
     if (ref.current) ref.current.click();
   };
-
 
   const getBankFieldLabel = () => {
     switch (form.payment) {
@@ -111,7 +110,7 @@ const ProfileForm = () => {
   };
 
   // Submit handler: build FormData and send PATCH request
- const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!userId) {
@@ -142,7 +141,7 @@ const ProfileForm = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/counselors/complete-profile", {
+      const res = await fetch(`${API_URL}/counselors/complete-profile`, {
         method: "PATCH",
         body: formData,
       });
@@ -155,12 +154,11 @@ const ProfileForm = () => {
       const result = await res.json();
       console.log("Profile submitted:", result);
       navigate("/counselor-dashboard");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Submission error:", error);
-      alert(error.message);
+     
     }
   };
-
 
   return (
     <div className="min-h-screen bg-purple-100 flex flex-col items-center justify-center p-4">
@@ -169,35 +167,32 @@ const ProfileForm = () => {
         <div className="flex flex-col items-center mb-6">
           <div className="relative">
             <div className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
-             {form.profilePicture ? (
-  <img
-    src={URL.createObjectURL(form.profilePicture)}
-    alt="Profile"
-    className="w-full h-full object-cover"
-  />
-) : form.existingProfilePicture ? (
-  <img
-    src={`http://localhost:3000/uploads/profile-pictures/${form.existingProfilePicture}`}
-    alt="Profile"
-    className="w-full h-full object-cover"
-  />
-) : (
-  <svg>...</svg>
-)}
-
+              {form.profilePicture ? (
+                <img
+                  src={URL.createObjectURL(form.profilePicture)}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : form.existingProfilePicture ? (
+                <img
+                  src={`${API_URL}/uploads/profile-pictures/${form.existingProfilePicture}`}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <svg>...</svg>
+              )}
             </div>
             <button
               type="button"
               onClick={() => triggerFileInput(fileInputRef)}
               className="absolute bottom-0 right-0 bg-purple-400 rounded-full p-2 border-4 border-white hover:bg-purple-500 transition-colors"
-              aria-label="Upload profile picture"
-            >
+              aria-label="Upload profile picture">
               <svg
                 className="w-5 h-5 text-white"
                 fill="none"
                 stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+                viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -245,8 +240,7 @@ const ProfileForm = () => {
               name="gender"
               value={form.gender}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-md bg-purple-100 border border-gray-300 focus:ring-2 focus:ring-purple-300 focus:outline-none"
-            >
+              className="w-full px-4 py-3 rounded-md bg-purple-100 border border-gray-300 focus:ring-2 focus:ring-purple-300 focus:outline-none">
               <option>Male</option>
               <option>Female</option>
             </select>
@@ -257,8 +251,7 @@ const ProfileForm = () => {
               name="payment"
               value={form.payment}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-md bg-purple-100 border border-gray-300 focus:ring-2 focus:ring-purple-300 focus:outline-none"
-            >
+              className="w-full px-4 py-3 rounded-md bg-purple-100 border border-gray-300 focus:ring-2 focus:ring-purple-300 focus:outline-none">
               <option value="">Preferred payment method</option>
               <option>Bank Transfer</option>
               <option>Telebirr Payment</option>
@@ -287,16 +280,14 @@ const ProfileForm = () => {
                 type="button"
                 onClick={() => triggerFileInput(certInputRef)}
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-purple-600 hover:text-purple-800"
-                aria-label="Upload cerification"
-              >
+                aria-label="Upload cerification">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-6 w-6"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
-                  strokeWidth={2}
-                >
+                  strokeWidth={2}>
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -330,7 +321,7 @@ const ProfileForm = () => {
               onChange={handleChange}
               className="w-full px-4 py-3 rounded-md bg-purple-100 border border-gray-300 focus:ring-2 focus:ring-purple-300 focus:outline-none resize-none h-48"
             />
-            
+
             <div className="bg-purple-100 rounded-md border border-gray-300 p-4 h-48 flex flex-col">
               <span className="block mb-2 font-medium text-gray-700">
                 Language spoken
@@ -339,8 +330,7 @@ const ProfileForm = () => {
                 {["English", "Amharic", "Oromic"].map((lang) => (
                   <label
                     key={lang}
-                    className="flex items-center space-x-2 cursor-pointer text-gray-700"
-                  >
+                    className="flex items-center space-x-2 cursor-pointer text-gray-700">
                     <input
                       type="checkbox"
                       name="languages"
@@ -360,15 +350,13 @@ const ProfileForm = () => {
           <div className="flex justify-center space-x-6 mt-8">
             <button
               type="submit"
-              className="bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3 px-12 rounded-lg shadow-md transition-all"
-            >
+              className="bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3 px-12 rounded-lg shadow-md transition-all">
               Submit Profile
             </button>
             <button
               type="button"
               onClick={() => navigate("/counselor-dashboard")}
-              className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-3 px-12 rounded-lg shadow-md transition-all"
-            >
+              className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-3 px-12 rounded-lg shadow-md transition-all">
               Later
             </button>
           </div>

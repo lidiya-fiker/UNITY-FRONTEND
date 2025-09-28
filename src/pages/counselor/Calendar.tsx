@@ -15,6 +15,7 @@ import {
   parse,
 } from "date-fns";
 import { useSearchParams } from "react-router-dom";
+import { API_URL } from "@/config/api";
 
 function parseJwt(token: string) {
   try {
@@ -22,6 +23,13 @@ function parseJwt(token: string) {
   } catch {
     return null;
   }
+}
+
+interface ApiSlot {
+  id: string;
+  date: string;      // ISO string
+  startTime: string; // e.g., "09:00"
+  endTime: string;   // e.g., "10:00"
 }
 
 interface TimeSlot {
@@ -52,8 +60,6 @@ export default function Calendar() {
     end: endOfMonth(currentMonth),
   });
 
-
-
   // Fetch profile with status and approval
   useEffect(() => {
     const fetchProfile = async () => {
@@ -73,12 +79,9 @@ export default function Calendar() {
       }
 
       try {
-        const res = await axios.get(
-          `http://localhost:3000/counselors/profile/${id}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
+        const res = await axios.get(`${API_URL}/counselors/profile/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
         // Expecting res.data.status (string) and res.data.isApproved (boolean)
         setStatus(res.data.status);
@@ -107,15 +110,12 @@ export default function Calendar() {
       const endDate = format(endOfMonth(currentMonth), "yyyy-MM-dd");
 
       try {
-        const res = await axios.get(
-          `http://localhost:3000/schedule/available`,
-          {
-            params: { startDate, endDate, counselorId },
-          },
-        );
+        const res = await axios.get(`${API_URL}/schedule/available`, {
+          params: { startDate, endDate, counselorId },
+        });
 
         const scheduleMap: Record<string, TimeSlot[]> = {};
-        res.data.forEach((slot: any) => {
+        res.data.forEach((slot: ApiSlot) => {
           const dateStr = slot.date.split("T")[0];
           if (!scheduleMap[dateStr]) scheduleMap[dateStr] = [];
           scheduleMap[dateStr].push({
@@ -167,7 +167,7 @@ export default function Calendar() {
     const dateStr = format(selectedDate, "yyyy-MM-dd");
 
     try {
-      const res = await axios.post(`http://localhost:3000/schedule`, {
+      const res = await axios.post(`${API_URL}/schedule`, {
         date: dateStr,
         startTime: newSlot.start,
         endTime: newSlot.end,
@@ -207,7 +207,7 @@ export default function Calendar() {
     }
 
     try {
-      await axios.delete(`http://localhost:3000/schedule/${slot.id}`);
+      await axios.delete(`${API_URL}/schedule/${slot.id}`);
       const dateStr = format(date, "yyyy-MM-dd");
 
       setSchedule((prev) =>

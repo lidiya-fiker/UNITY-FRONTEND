@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, redirect, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { API_URL } from "@/config/api";
 // import { IconBrandGoogle } from "@tabler/icons-react";
 
 const ROLE_MAP = {
@@ -52,7 +53,7 @@ const UserRegister = () => {
   //     setLoading(true);
   //     setError(null);
 
-  //     const redirectUrl = `http://localhost:3000/auth/google/start?role=${role}`;
+  //     const redirectUrl = `${API_URL}/auth/google/start?role=${role}`;
   //     window.location.href = redirectUrl;
   //   } catch (error) {
   //     setError("Google sign-up failed, please try again.");
@@ -78,20 +79,23 @@ const UserRegister = () => {
         role: ROLE_MAP[form.role as "client" | "counselor"] || "",
       };
 
-      const response = await axios.post(
-        "http://localhost:3000/user/signup",
-        payload,
-      );
+      const response = await axios.post(`${API_URL}/user/signup`, payload);
 
       if (response.data?.verificationId) {
-        navigate( 
+        navigate(
           `/verify-email?verificationId=${response.data.verificationId}`,
         );
       } else {
         setError("Something went wrong. Please try again.");
       }
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Registration failed.");
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || "Registration failed.");
+      } else if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Registration failed.");
+      }
     } finally {
       setLoading(false);
     }

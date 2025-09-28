@@ -13,6 +13,7 @@ import {
 import Navbar from "./component/Navbar";
 import Rating from "react-rating-stars-component";
 import { IconHeart } from "@tabler/icons-react";
+import { API_URL } from "@/config/api";
 
 export default function ClientDashboard() {
   interface MyJwtPayload {
@@ -66,7 +67,7 @@ export default function ClientDashboard() {
       try {
         const decoded = jwtDecode<MyJwtPayload>(token);
         const res = await axios.get(
-          `http://localhost:3000/clients/profile/${decoded.id}`,
+          `${API_URL}/clients/profile/${decoded.id}`,
           { headers: { Authorization: `Bearer ${token}` } },
         );
         console.log("User ID:", decoded.id);
@@ -92,7 +93,7 @@ export default function ClientDashboard() {
       }
       try {
         const response = await axios.get(
-          `http://localhost:3000/api/clientbooking/${clientId}`,
+          `${API_URL}/api/clientbooking/${clientId}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -162,14 +163,11 @@ export default function ClientDashboard() {
     if (!clientId) return;
     const fetchReviews = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:3000/reviews/client/${clientId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
+        const res = await axios.get(`${API_URL}/reviews/client/${clientId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-        );
+        });
         const ratingsMap = {};
         res.data.forEach((review) => {
           const counselorId = review.counselor?.userId || review.counselorId;
@@ -240,7 +238,7 @@ export default function ClientDashboard() {
 
     try {
       await axios.post(
-        "http://localhost:3000/reviews",
+        `${API_URL}/reviews`,
         {
           counselorId: selectedCounselor.id,
           clientId,
@@ -282,19 +280,16 @@ export default function ClientDashboard() {
     try {
       const startDate = format(new Date(), "yyyy-MM-dd");
       const endDate = format(addDays(new Date(), 30), "yyyy-MM-dd");
-      const response = await axios.get(
-        `http://localhost:3000/schedule/available`,
-        {
-          params: {
-            startDate,
-            endDate,
-            counselorId,
-          },
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+      const response = await axios.get(`${API_URL}/schedule/available`, {
+        params: {
+          startDate,
+          endDate,
+          counselorId,
         },
-      );
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       const schedules = response.data;
       // Transform to expected format: { dates: [{ date, times: [{ id, startTime, endTime }] }] }
       const availability = {
@@ -459,7 +454,7 @@ export default function ClientDashboard() {
                       className="bg-white rounded-2xl p-4 shadow-lg hover:shadow-xl transform transition-colors hover:bg-gray-50">
                       {session.counselor?.image ? (
                         <img
-                          src={`http://localhost:3000/uploads/profile-pictures/${session.counselor.image}`}
+                          src={`${API_URL}/uploads/profile-pictures/${session.counselor.image}`}
                           alt={`${session.counselor.firstName} ${session.counselor.lastName}`}
                           className="w-20 h-20 rounded-full mx-auto object-cover mb-4 border-2 border-indigo-200"
                           onError={(e) =>
@@ -580,7 +575,7 @@ export default function ClientDashboard() {
                           className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transform transition-colors hover:bg-gray-50">
                           {counselor.image ? (
                             <img
-                              src={`http://localhost:3000/uploads/profile-pictures/${counselor.image}`}
+                              src={`${API_URL}/uploads/profile-pictures/${counselor.image}`}
                               alt={fullName}
                               className="w-20 h-20 rounded-full mx-auto object-cover mb-4 border-2 border-indigo-200"
                               onError={(e) =>

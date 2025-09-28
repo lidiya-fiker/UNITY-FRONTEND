@@ -1,7 +1,7 @@
-
 import React, { useEffect, useState } from "react";
 import { IconHeart } from "@tabler/icons-react";
-import Navbar from './component/Navbar';
+import Navbar from "./component/Navbar";
+import { API_URL } from "@/config/api";
 
 const CounselorPosts = () => {
   const [posts, setPosts] = useState([]);
@@ -10,13 +10,13 @@ const CounselorPosts = () => {
   });
 
   useEffect(() => {
-    fetch("http://localhost:3000/articles")
+    fetch(`${API_URL}/articles`)
       .then((res) => res.json())
       .then((data) => {
         // Sort posts by createdAt (newest first)
         const sortedPosts = data.sort((a, b) => {
-          const dateA = new Date(a.createdAt || '1970-01-01');
-          const dateB = new Date(b.createdAt || '1970-01-01');
+          const dateA = new Date(a.createdAt || "1970-01-01");
+          const dateB = new Date(b.createdAt || "1970-01-01");
           return dateB.getTime() - dateA.getTime();
         });
         setPosts(sortedPosts);
@@ -50,8 +50,6 @@ const CounselorPosts = () => {
         <Navbar />
       </div>
 
-    
-
       {/* Scrollable Posts Section */}
       <main className="mt-[200px] sm:mt-[100px] flex-grow overflow-y-auto pb-12">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -60,13 +58,12 @@ const CounselorPosts = () => {
               posts.map((post) => (
                 <article
                   key={post.id}
-                  className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transform transition hover:-translate-y-1 animate-fade-in"
-                >
+                  className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transform transition hover:-translate-y-1 animate-fade-in">
                   <div className="flex items-start space-x-4 mb-4">
                     <img
                       src={
                         post.counselor?.profilePicture
-                          ? `http://localhost:3000/uploads/profile-pictures/${post.counselor.profilePicture}`
+                          ? `${API_URL}/uploads/profile-pictures/${post.counselor.profilePicture}`
                           : "/path/to/default-avatar.png"
                       }
                       alt={
@@ -75,11 +72,14 @@ const CounselorPosts = () => {
                           : "Counselor"
                       }
                       className="w-12 h-12 rounded-full object-cover border-2 border-purple-200"
-                      onError={(e) => (e.currentTarget.src = "/path/to/default-avatar.png")}
+                      onError={(e) =>
+                        (e.currentTarget.src = "/path/to/default-avatar.png")
+                      }
                     />
                     <div>
                       <h3 className="font-semibold text-gray-800">
-                        Counselor {post.counselor?.user?.firstName || "Anonymous"}
+                        Counselor{" "}
+                        {post.counselor?.user?.firstName || "Anonymous"}
                       </h3>
                     </div>
                   </div>
@@ -94,13 +94,14 @@ const CounselorPosts = () => {
                   <div className="flex items-center space-x-2 text-purple-600">
                     <button
                       onClick={() => handleLikeToggle(post.id)}
-                      className="flex items-center space-x-1 hover:text-purple-800 transition"
-                    >
+                      className="flex items-center space-x-1 hover:text-purple-800 transition">
                       <IconHeart
                         size={20}
                         className={likedPosts[post.id] ? "fill-purple-600" : ""}
                       />
-                      <span>{(post.likes || 0) + (likedPosts[post.id] || 0)}</span>
+                      <span>
+                        {(post.likes || 0) + (likedPosts[post.id] || 0)}
+                      </span>
                     </button>
                   </div>
                 </article>
